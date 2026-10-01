@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 import pandas as pd
 import matplotlib.pyplot as plt
+from pathlib import Path
+
+FIGURES_DIR = Path("figures")
+FIGURES_DIR.mkdir(exist_ok=True)
+
+
+
 
 def main():
     data = preprocess_data()
@@ -79,7 +86,9 @@ def plot_timeseries(month_data,
     # format x-axis for better date display
     fig.autofmt_xdate()
     
-    fig.savefig(f"{name_prefix}-{plot_type}.png")
+    fig.savefig(FIGURES_DIR / f"{name_prefix}-{plot_type}.png")
+    plt.close(fig)
+
 
 def arithmetic_mean(values):
     return sum(values)/len(values)
