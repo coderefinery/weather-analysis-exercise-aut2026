@@ -1,20 +1,32 @@
 #!/usr/bin/env python
-
-
 import pandas as pd
 import matplotlib.pyplot as plt
 
+def main():
+    data = preprocess_data()
 
-# read data
-data = pd.read_csv("weather_data.csv")
+    january = data.loc["2024-01"]
+    plot_temperature_and_precipitation(january,"2024-01")
+    
+    february = data.loc["2024-02"]
+    plot_temperature_and_precipitation(february,"2024-02")
+    
+    march = data.loc["2024-03"]
+    plot_temperature_and_precipitation(march,"2024-03")
 
-# combine 'date' and 'time' into a single column 'recorded_at' as type datetime
-data["recorded_at"] = pd.to_datetime(data["date"] + " " + data["time"])
+def preprocess_data():
+    # read data
+    data = pd.read_csv("weather_data.csv")
+    
+    # combine 'date' and 'time' into a single column 'recorded_at' as type datetime
+    data["recorded_at"] = pd.to_datetime(data["date"] + " " + data["time"])
+    
+    # set 'recorded_at' as index for convenience
+    data = data.set_index("recorded_at")
+    return data
+   
 
-# set 'recorded_at' as index for convenience
-data = data.set_index("recorded_at")
-
-def process_month(month_data,name_prefix):
+def plot_temperature_and_precipitation(month_data,name_prefix):
     plot_timeseries(month_data, name_prefix,
                     column="air_temperature_celsius",
                     color="red",
@@ -55,8 +67,7 @@ def plot_timeseries(month_data,
    
     # optional logic to show the mean
     if show_mean:
-        values = month_data[column].values
-        mean_value = sum(values) / len(values)
+        mean_value = arithmetic_mean(month_data[column].values) 
         
         ax.axhline(
             y=mean_value,
@@ -70,12 +81,10 @@ def plot_timeseries(month_data,
     
     fig.savefig(f"{name_prefix}-{plot_type}.png")
 
-# keep only january data using datetime period indexing
-january = data.loc["2024-01"]
-process_month(january,"2024-01")
+def arithmetic_mean(values):
+    return sum(values)/len(values)
 
-february = data.loc["2024-02"]
-process_month(february,"2024-02")
 
-march = data.loc["2024-03"]
-process_month(march,"2024-03")
+if __name__ == "__main__":
+    main()
+
